@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VividAR — WebAR Video Marker</title>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles/style.css" />
+
+    <!-- A-Frame -->
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+
+    <!-- AR.js for A-Frame (marker-based tracking) -->
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+  </head>
+  <body>
+
+    <!-- Fallback message shown when WebGL / camera is unavailable -->
+    <div id="no-camera-msg" style="display:none;">
+      <p>&#128247; Camera access is required for AR. Please allow camera permissions and reload.</p>
+    </div>
+
+    <!--
+      a-scene configuration:
+        embedded          — removes the A-Frame default fullscreen UI
+        arjs              — enables AR.js marker tracking
+          sourceType: webcam          — use device camera
+          debugUIEnabled: false       — hide AR.js debug overlay
+          detectionMode: mono_and_matrix — detect both types of markers
+    -->
+    <a-scene
+      embedded
+      arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix;"
+      renderer="logarithmicDepthBuffer: true;"
+      vr-mode-ui="enabled: false"
+    >
+
+      <!--
+        Video asset declared here so A-Frame can pre-load it.
+        autoplay, loop, muted and playsinline satisfy browser autoplay policies.
+
+        To switch to a different video, update the src attribute below
+        and replace /assets/video.mp4 with your file.
+      -->
+      <a-assets>
+        <video
+          id="ar-video"
+          src="assets/video.mp4"
+          autoplay
+          loop
+          muted
+          playsinline
+          webkit-playsinline
+          crossorigin="anonymous"
+        ></video>
+      </a-assets>
+
+      <!--
+        Marker configuration (choose ONE option):
+
+        Option A — built-in Hiro marker (default, no extra files needed):
+          <a-marker preset="hiro">
+
+        Option B — built-in Kanji marker:
+          <a-marker preset="kanji">
+
+        Option C — custom pattern file:
+          <a-marker type="pattern" url="assets/marker.patt">
+          (Replace assets/marker.patt with your own .patt file generated at
+           https://jeromeetienne.github.io/AR.js/three.js/examples/marker-training/examples/generator.html)
+
+        The default below uses the Hiro preset so the demo works out-of-the-box.
+        Print or display the Hiro marker image and point your camera at it.
+        NOTE: assets/marker.patt is only used with Option C (custom pattern).
+      -->
+      <a-marker
+        id="ar-marker"
+        preset="hiro"
+      >
+        <!--
+          Video plane rendered on top of the marker.
+          width/height should match the video's aspect ratio (default 16:9).
+          rotation="-90 0 0" lays it flat on the marker surface.
+        -->
+        <a-video
+          id="ar-video-entity"
+          src="#ar-video"
+          width="1.6"
+          height="0.9"
+          rotation="-90 0 0"
+          position="0 0 0"
+        ></a-video>
+      </a-marker>
+
+      <!-- Required camera entity for AR.js -->
+      <a-entity camera></a-entity>
+
+    </a-scene>
+
+    <!-- App logic -->
+    <script src="js/app.js"></script>
+  </body>
+</html>
